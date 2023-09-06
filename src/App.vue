@@ -1,26 +1,45 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div class="wrapper">
+    <Form v-on:send-form="onSend"></Form>
+
+    <List v-on:item-done="onDone" v-on:item-remove="onRemove" v-bind:arr="list"></List>
+  </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import List from './components/List.vue';
+import Form from './components/Form.vue';
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    List,
+    Form
+  },
+  data() {
+    return {
+     list: [
+      {id: 1, title: "Завершить проект", done: true}
+     ],
+     lastID: 1,
+    }
+  },
+  methods: {
+   onSend(item) {
+    this.list.unshift({id: ++this.lastID, title: item, done: false})
+   },
+   onRemove(id) {
+    const idx = this.list.findIndex((task) => task.id == id);
+    this.list.splice(idx, 1);
+   },
+   onDone(id) {
+    const task = this.list.find((task) => task.id == id);
+    task.done = !task.done;
+   }
   }
 }
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+
 </style>
