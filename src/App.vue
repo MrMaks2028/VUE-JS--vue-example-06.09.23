@@ -1,4 +1,5 @@
 <template>
+  <h1>Список Задач</h1>
   <div class="wrapper">
     <Form v-on:send-form="onSend"></Form>
 
@@ -19,14 +20,15 @@ export default {
   data() {
     return {
      list: [
-      {id: 1, title: "Завершить проект", done: true}
      ],
      lastID: 1,
     }
   },
   methods: {
    onSend(item) {
-    this.list.unshift({id: ++this.lastID, title: item, done: false})
+    const newTask = {id: ++this.lastID, title: item, done: false}
+    this.list.unshift(newTask);
+    fetch('/api/v1/task', { method: "post", body: JSON.stringify(this.list), headers: {"Content-Type": "application/json"} } );
    },
    onRemove(id) {
     const idx = this.list.findIndex((task) => task.id == id);
@@ -36,6 +38,11 @@ export default {
     const task = this.list.find((task) => task.id == id);
     task.done = !task.done;
    }
+  },
+  mounted() {
+    fetch('/api/v1/task')
+      .then((res) => res.json())
+      .then((data) => this.list = data);
   }
 }
 </script>
